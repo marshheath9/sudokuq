@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sudokuq"
+version = "0.1.0"
+description = "Stream sudoku puzzles and check whether each has a unique solution"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "marshheath9" }]
+
+[project.scripts]
+sudokuq = "sudokuq.__main__:main"
+
+[tool.setuptools.packages.find]
+include = ["sudokuq*"]
