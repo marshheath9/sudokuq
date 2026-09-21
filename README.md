@@ -59,12 +59,19 @@ count_solutions(grid, limit=2)  # 1
 `count_solutions` stops as soon as it finds `limit` solutions, so checking
 uniqueness on a hard puzzle doesn't mean fully enumerating every solution.
 
+## Testing
+
+```
+$ pip install -e ".[test]"
+$ pytest
+```
+
 ## Status
 
-Early. No test suite yet, no packaging release, solver is plain backtracking
-with no advanced pruning beyond minimum-remaining-values ordering. Good
-enough for correctness on the puzzle sizes sudoku actually has (9x9), not
-yet benchmarked against very large batches.
+Early. No packaging release yet, solver is plain backtracking with no
+advanced pruning beyond minimum-remaining-values ordering. Good enough for
+correctness on the puzzle sizes sudoku actually has (9x9), not yet
+benchmarked against very large batches.
 
 ## License
 

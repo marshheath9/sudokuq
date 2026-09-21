@@ -14,5 +14,11 @@ authors = [{ name = "marshheath9" }]
 [project.scripts]
 sudokuq = "sudokuq.__main__:main"
 
+[project.optional-dependencies]
+test = ["pytest>=7"]
+
 [tool.setuptools.packages.find]
 include = ["sudokuq*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
