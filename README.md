@@ -38,6 +38,18 @@ $ cat puzzles.txt | python -m sudokuq
 
 `FILE` can also be `-` to mean stdin explicitly.
 
+For a large batch, pass `--progress` to get a line count and elapsed time
+written to stderr every 100,000 lines, plus a final count when the input
+ends. Verdicts still go to stdout, so this is safe to leave on even when
+you're redirecting output to a file:
+
+```
+$ python -m sudokuq --progress puzzles.txt > verdicts.txt
+... 100000 lines, 4.2s
+... 200000 lines, 8.3s
+done: 214593 lines, 8.9s
+```
+
 ## Why streaming matters here
 
 `sudokuq` iterates the input file object (or `sys.stdin`) line by line. It
