@@ -38,6 +38,15 @@ $ cat puzzles.txt | python -m sudokuq
 
 `FILE` can also be `-` to mean stdin explicitly.
 
+Gzip input works without any flag, for a file or for stdin. It is detected
+from the first two bytes, not the file name, and is decompressed as it is
+read:
+
+```
+$ python -m sudokuq puzzles.txt.gz
+$ curl -s https://example.com/puzzles.txt.gz | python -m sudokuq
+```
+
 For a large batch, pass `--progress` to get a line count and elapsed time
 written to stderr every 100,000 lines, plus a final count when the input
 ends. Verdicts still go to stdout, so this is safe to leave on even when

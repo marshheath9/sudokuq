@@ -1,6 +1,7 @@
+import gzip
 import io
 
-from sudokuq.__main__ import classify, run
+from sudokuq.__main__ import classify, main, open_text, run
 
 SOLVED_GRID = (
     "534678912"
@@ -49,6 +50,37 @@ def test_run_numbers_lines_and_writes_tab_separated_verdicts():
         "3\tno-solution\n"
         "4\tmalformed: expected 81 characters, got 80\n"
     )
+
+
+def _buffered(data):
+    return io.BufferedReader(io.BytesIO(data))
+
+
+def test_open_text_reads_plain_input():
+    data = (SINGLE_BLANK_UNIQUE + "\n" + BLANK_GRID + "\n").encode()
+    assert list(open_text(_buffered(data))) == [
+        SINGLE_BLANK_UNIQUE + "\n",
+        BLANK_GRID + "\n",
+    ]
+
+
+def test_open_text_reads_gzip_input():
+    data = gzip.compress((SINGLE_BLANK_UNIQUE + "\n" + BLANK_GRID + "\n").encode())
+    assert list(open_text(_buffered(data))) == [
+        SINGLE_BLANK_UNIQUE + "\n",
+        BLANK_GRID + "\n",
+    ]
+
+
+def test_open_text_handles_empty_input():
+    assert list(open_text(_buffered(b""))) == []
+
+
+def test_main_reads_gzip_file_regardless_of_name(tmp_path, capsys):
+    path = tmp_path / "puzzles.dat"
+    path.write_bytes(gzip.compress((SINGLE_BLANK_UNIQUE + "\n" + BLANK_GRID + "\n").encode()))
+    assert main([str(path)]) == 0
+    assert capsys.readouterr().out == "1\tunique\n2\tmultiple\n"
 
 
 def test_run_skips_blank_lines_but_keeps_original_line_numbers():

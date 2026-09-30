@@ -7,6 +7,8 @@ over multi-gigabyte puzzle dumps instead of `.read().splitlines()`-ing
 the whole thing first.
 """
 
+import gzip
+import io
 import sys
 import time
 
@@ -19,12 +21,27 @@ HELP_TEXT = (
     "Reads one 81-character sudoku grid per line from FILE (or stdin if\n"
     "FILE is omitted or '-') and prints a tab-separated verdict per line:\n"
     "unique, multiple, no-solution, or malformed: <reason>.\n"
+    "Gzip-compressed input is detected automatically, from a file or stdin.\n"
     "\n"
     "--progress    every 100000 lines, write a line count and elapsed\n"
     "              time to stderr so long batch runs show they're alive.\n"
 )
 
 PROGRESS_EVERY = 100_000
+GZIP_MAGIC = b"\x1f\x8b"
+
+
+def open_text(raw):
+    """Wrap a buffered binary stream as a text stream of lines.
+
+    Gzip is detected from the two magic bytes rather than the file name, so
+    it also works on stdin (`zcat` not needed) and on misnamed files. peek()
+    leaves the stream position alone, and GzipFile reads incrementally, so
+    compressed input is still never held in memory whole.
+    """
+    if raw.peek(2)[:2] == GZIP_MAGIC:
+        raw = gzip.GzipFile(fileobj=raw)
+    return io.TextIOWrapper(raw, encoding="utf-8")
 
 
 def classify(line):
@@ -69,11 +86,11 @@ def main(argv=None):
     positional = [arg for arg in argv if arg != "--progress"]
 
     if positional and positional[0] != "-":
-        with open(positional[0], "r", encoding="utf-8") as handle:
-            run(handle, progress=progress)
+        with open(positional[0], "rb") as raw:
+            run(open_text(raw), progress=progress)
         return 0
 
-    run(sys.stdin, progress=progress)
+    run(open_text(sys.stdin.buffer), progress=progress)
     return 0
 
 
